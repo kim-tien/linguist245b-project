@@ -26,3 +26,5 @@ Once we are in the later stages of desigining a new human behavioral experiment 
 When we are preparing to write up a manuscript (or a conference paper), we will start an [Overleaf](https://www.overleaf.com/) project. 
 This is where you will want to place your LaTeX source `.tex` files for your paper and your publication-ready figures as high-resolution `.pdf` files in the `figures` directory. 
 We typically format and fine-tune our figures using Adobe Illustrator.
+
+
