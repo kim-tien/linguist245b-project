@@ -16,6 +16,10 @@
     const jsPsych = initJsPsych({
         // TODO: add a progress bar showing how far the experiment has progressed
         show_progress_bar: true,
+      // on_finish: function() {
+        // Displays data at the end of the experiment
+        // Better to comment out for the real experiment so participants aren't confused
+        // jsPsych.data.displayData();}
     });
 
 
@@ -92,6 +96,7 @@
       let shuffledCondition = shuffledStimuli[i].condition
       const readingTrials = createReadingTrials(shuffledSentence, i + 1, shuffledCondition);
       timeline.push(...readingTrials);
+      break;
     }
 
 
@@ -117,6 +122,14 @@
                 data_string: ()=>jsPsych.data.get().csv()
               };
     timeline.push(save_data)
+
+    const endMessage = {
+      type: jsPsychInstructions,
+        pages: [
+            '<div class="message"><p>You can now close this page.</p></div>'
+        ],
+    };
+    timeline.push(endMessage);
 
     // This line actually runs the experiment 
     jsPsych.run(timeline);
