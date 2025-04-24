@@ -96,7 +96,6 @@
       let shuffledCondition = shuffledStimuli[i].condition
       const readingTrials = createReadingTrials(shuffledSentence, i + 1, shuffledCondition);
       timeline.push(...readingTrials);
-      
       break;
     }
 
@@ -125,10 +124,9 @@
     timeline.push(save_data)
 
     const endMessage = {
-      type: jsPsychInstructions,
-        pages: [
-            '<div class="message"><p>You can now close this page.</p></div>'
-        ],
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<div class="message"><p>You can now close this page.</p></div>',
+      choices: "NO_KEYS",
     };
     timeline.push(endMessage);
 
