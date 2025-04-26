@@ -305,6 +305,7 @@ speakers23 = shuffle(speakers[22]);
 speakers24 = shuffle(speakers[23]);
 speakers25 = shuffle(speakers[24]);
 
+
 var sents = {
     states: {
         heart0: {
@@ -555,6 +556,7 @@ var sents = {
     }
 };
 
+
 function doSentSubs(sents, polite, domain, utterance, people, goal, blank_utterance) {
     utterance = sents["utterances"][utterance]["sent_utterance"];
     blank_utterance = sents["blank_utterances"]["universal"]["sent_utterance"];
@@ -595,6 +597,7 @@ function doSentSubs(sents, polite, domain, utterance, people, goal, blank_uttera
 
     return [utterance, context, state, precontext, question, question2, question3, knowledge, goal, feeling, context2, blank_utterance, question0];
 }
+
 
 var numConditions = allConditions.length;
 var allTrialOrders = allConditions;
@@ -1007,4 +1010,3 @@ async function saveWithDataPipe () {
             err.message);
     }
   }
-  

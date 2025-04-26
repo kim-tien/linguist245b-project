@@ -20,8 +20,6 @@
 </head>
 
 <body>
-
-
     <div class="progress_white">
         <div class="bar-wrapper">
             <div class="bar"></div>
@@ -110,6 +108,7 @@
             }
         }
 
+
         function ValidateSelect(form) {
             if (form.ageRange.selectedIndex != 0 && form.ageRange.selectedIndex != 1 && form.ageRange.selectedIndex != 2 && form.ageRange.selectedIndex != 3 && form.ageRange.selectedIndex != 4 && form.ageRange.selectedIndex != 5 && form.ageRange.selectedIndex != 6) {
                 alert("Please answer this question.");
@@ -117,6 +116,7 @@
             }
             return true;
         }
+
 
         function ValidateSelect2(form) {
             if (form.choose_posneg.selectedIndex == 0 || form.choose_posneg.selectedIndex == -1) {
@@ -126,6 +126,7 @@
             return true;
         }
 
+
         function ValidateSelect3(form) {
             if (form.choose_keyword.selectedIndex == 0 || form.choose_keyword.selectedIndex == -1) {
                 alert("Please answer this question.");
@@ -133,6 +134,7 @@
             }
             return true;
         }
+
 
         function ValidateNumber(field) {
             valid = true;
@@ -147,6 +149,7 @@
             return valid;
 
         }
+
 
         function ValidateNumberLength(field, length) {
             valid = true;
@@ -177,6 +180,7 @@
 
             return valid;
         }
+
 
         function ValidateText2(field) {
             valid = true;
@@ -289,5 +293,4 @@
     <script src="speaker_replication.js"></script>
 
 </body>
-
 </html>
