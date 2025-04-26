@@ -103,7 +103,7 @@ function getRadioCheckedValue(formNum, radio_name) {
 
 // CONDITION ASSIGNMENT
 var cond = random(4)+1;
-var expt = "polgrice_speaker_pilot2_both_social";
+var expt = "polgrice_speaker_3starfinal";
 
 // call the maker getter to get the cond variable 
 //var xmlHttp = null;
@@ -116,14 +116,16 @@ var score = shuffle(["nice", "honest", "both"]);
 var prediction = shuffle(["ask", "like"])
 var state_knowledge = "unknown";
 
+var domains0 = ["presentation_pr", "cookie_pr", "poem_pr"];
 var domains1 =
     shuffle(["poem", "cake", "cookie", "presentation", "song", "film", "solo", "monologue", "dance", "painting", "app", "review", "recital"]);
 //var domains = domains1.concat(domains1)
-var domains = domains1
+var domains = domains0.concat(domains1);
 
 //var states1 = shuffle(["heart1", "heart2", "heart3", "heart4", "heart5"]);
-var states1 = shuffle(["heart0", "heart1", "heart2", "heart3", "heart4"]);
-var states = states1.concat(states1)
+var states0 = ["heart2", "heart1", "heart0"];
+var states1 = shuffle(["heart0", "heart1", "heart2", "heart3"]);
+var states = states0.concat(states1, states1, states1)
 //var states = states1
 
 var posneg1 = ["was", "wasn't"];
@@ -152,6 +154,7 @@ if (cond == 1) {
     var keywords = keywords2
 }
 
+var utterances0 = ["practice1", "practice2", "practice3"];
 var utterances1 = 
     ["yes_terrible", "yes_bad", "yes_okay", "yes_good", "yes_amazing"];
 var utterances2 = 
@@ -171,28 +174,24 @@ if (cond == 1) {
     var utterances_mixed = utterances4.concat(utterances3)
 }
 
-var utterances = utterances_mixed.concat(utterances_mixed, utterances_mixed)
+var utterances = utterances0.concat(utterances_mixed, utterances_mixed, utterances_mixed)
 
 var blank_utterances = "universal"
 
-var goals1 = ["both","both","both","both","both"];
-var goals2 = ["informative","informative","informative","informative","informative"];
-var goals3 = ["social","social","social","social","social"];
+var goals0 = ["none","none","none"];
+var goals1 = ["both","both","both","both"];
+var goals2 = ["informative","informative","informative","informative"];
+var goals3 = ["social","social","social","social"];
 //var goal_list = shuffle([goals1, goals2, goals3]);
 //var goals = goal_list[0].concat(goal_list[1], goal_list[2])
-var goal_list = shuffle([goals1, goals3]);
-var goals = goal_list[0].concat(goal_list[1])
+var goal_list = shuffle([goals1, goals2, goals3]);
+var goals = goals0.concat(goal_list[0], goal_list[1], goal_list[2])
 //var goals = goals1;
 
 var allConditions =
-//    shuffle(
-    [
-
-//shuffle(
     [
 {"domain": domains[0],
  "state": states[0],
- "blank_utterance": blank_utterances,
  "utterance": utterances[0],
  "people": "people1",
  "goal": goals[0],
@@ -202,15 +201,40 @@ var allConditions =
  "utterance": utterances[1],
  "people": "people2",
  "goal": goals[1],
- "blank_utterance": blank_utterances,
 },
 {"domain": domains[2],
  "state": states[2],
  "utterance": utterances[2],
  "people": "people3",
  "goal": goals[2],
- "blank_utterance": blank_utterances,
 },
+].concat(//    shuffle(
+//shuffle(
+    //[
+
+//shuffle(
+    [
+//{"domain": domains[0],
+// "state": states[0],
+// "blank_utterance": blank_utterances,
+// "utterance": utterances[0],
+// "people": "people1",
+// "goal": goals[0],
+//},
+//{"domain": domains[1],
+// "state": states[1],
+// "utterance": utterances[1],
+// "people": "people2",
+// "goal": goals[1],
+// "blank_utterance": blank_utterances,
+//},
+//{"domain": domains[2],
+// "state": states[2],
+// "utterance": utterances[2],
+// "people": "people3",
+// "goal": goals[2],
+// "blank_utterance": blank_utterances,
+//},
 {"domain": domains[3],
  "state": states[3],
  "utterance": utterances[3],
@@ -260,77 +284,77 @@ var allConditions =
  "goal": goals[9],
  "blank_utterance": blank_utterances,
 },
-//{"domain": domains[10],
-// "state": states[10],
-// "utterance": utterances[10],
-// "people": "people11",
-// "goal": goals[10],
-// "blank_utterance": blank_utterances,
-//},
-//{"domain": domains[11],
-// "state": states[11],
-// "utterance": utterances[11],
-// "people": "people12",
-// "goal": goals[11],
-// "blank_utterance": blank_utterances,
-//},
-//{"domain": domains[12],
-// "state": states[12],
-// "utterance": utterances[12],
-// "people": "people13",
-// "goal": goals[12],
-// "blank_utterance": blank_utterances,
-//},
-//{"domain": domains[13],
-// "state": states[13],
-// "utterance": utterances[13],
-// "people": "people14",
-// "goal": goals[13],
-// "blank_utterance": blank_utterances,
-//},
-//{"domain": domains[14],
-// "state": states[14],
-// "utterance": utterances[14],
-// "people": "people15",
-// "goal": goals[14],
-// "blank_utterance": blank_utterances,
-//},
-   ]
+{"domain": domains[10],
+ "state": states[10],
+ "utterance": utterances[10],
+ "people": "people11",
+ "goal": goals[10],
+ "blank_utterance": blank_utterances,
+},
+{"domain": domains[11],
+ "state": states[11],
+ "utterance": utterances[11],
+ "people": "people12",
+ "goal": goals[11],
+ "blank_utterance": blank_utterances,
+},
+{"domain": domains[12],
+ "state": states[12],
+ "utterance": utterances[12],
+ "people": "people13",
+ "goal": goals[12],
+ "blank_utterance": blank_utterances,
+},
+{"domain": domains[13],
+ "state": states[13],
+ "utterance": utterances[13],
+ "people": "people14",
+ "goal": goals[13],
+ "blank_utterance": blank_utterances,
+},
+{"domain": domains[14],
+ "state": states[14],
+ "utterance": utterances[14],
+ "people": "people15",
+ "goal": goals[14],
+ "blank_utterance": blank_utterances,
+},
+//   ]
 //        )
-];
+]);
 //);
 //}
 
-speakers = shuffle([["John", "Bob", ], ["Hailey", "Mika"], ["Karen", "Jenny"], ["Kyle", "James"], ["Sean", "Chris"],
-                    ["Lucy", "Sarah"], ["Bill", "Tom"], ["Heather", "Grace"], ["Jake", "Kevin"], ["Ann", "Diana"],
-                    ["George", "Henry"], ["Nathan", "Patrick"], ["Wendy", "Emma"], ["Stephanie", "Barbara"], ["Oliver", "Robert"],
-                    ["Matt", "Larry"], ["Steven", "Zack"], ["Fiona", "Yvonne"], ["Rebecca", "Cheryl"], ["Victoria", "Jasmine"],
-                    ["Albert", "Frank"], ["Greg", "Colin"], ["Ed", "Peter"], ["Molly", "Kara"], ["Justine", "Kelly"]]);
-speakers1 = shuffle(speakers[0]);
-speakers2 = shuffle(speakers[1]);
-speakers3 = shuffle(speakers[2]);
-speakers4 = shuffle(speakers[3]);
-speakers5 = shuffle(speakers[4]);
-speakers6 = shuffle(speakers[5]);
-speakers7 = shuffle(speakers[6]);
-speakers8 = shuffle(speakers[7]);
-speakers9 = shuffle(speakers[8]);
-speakers10 = shuffle(speakers[9]);
-speakers11 = shuffle(speakers[10]);
-speakers12 = shuffle(speakers[11]);
-speakers13 = shuffle(speakers[12]);
-speakers14 = shuffle(speakers[13]);
-speakers15 = shuffle(speakers[14]);
-speakers16 = shuffle(speakers[15]);
-speakers17 = shuffle(speakers[16]);
-speakers18 = shuffle(speakers[17]);
-speakers19 = shuffle(speakers[18]);
-speakers20 = shuffle(speakers[19]);
-speakers21 = shuffle(speakers[20]);
-speakers22 = shuffle(speakers[21]);
-speakers23 = shuffle(speakers[22]);
-speakers24 = shuffle(speakers[23]);
-speakers25 = shuffle(speakers[24]);
+speakers = shuffle([[["John", "Bob"], "he"], [["Hailey", "Mika"], "she"], [["Karen", "Jenny"], "she"], [["Kyle", "James"], "he"], [["Sean", "Chris"], "he"],
+                    [["Lucy", "Sarah"], "she"], [["Bill", "Tom"], "he"], [["Heather", "Grace"], "she"], [["Jake", "Kevin"], "he"], [["Ann", "Diana"], "she"],
+                    [["George", "Henry"], "he"], [["Nathan", "Patrick"], "he"], [["Wendy", "Emma"], "she"], [["Stephanie", "Barbara"], "she"], [["Oliver", "Robert"], "he"],
+                    [["Matt", "Larry"], "he"], [["Steven", "Zack"], "he"], [["Fiona", "Yvonne"], "she"], [["Rebecca", "Cheryl"], "she"], [["Victoria", "Jasmine"], "she"],
+                    [["Albert", "Frank"], "he"], [["Greg", "Colin"], "he"], [["Ed", "Peter"], "he"], [["Molly", "Kara"], "she"], [["Justine", "Kelly"], "she"]]);
+speakers1 = shuffle(speakers[0][0]);
+speakers2 = shuffle(speakers[1][0]);
+speakers3 = shuffle(speakers[2][0]);
+speakers4 = shuffle(speakers[3][0]);
+speakers5 = shuffle(speakers[4][0]);
+speakers6 = shuffle(speakers[5][0]);
+speakers7 = shuffle(speakers[6][0]);
+speakers8 = shuffle(speakers[7][0]);
+speakers9 = shuffle(speakers[8][0]);
+speakers10 = shuffle(speakers[9][0]);
+speakers11 = shuffle(speakers[10][0]);
+speakers12 = shuffle(speakers[11][0]);
+speakers13 = shuffle(speakers[12][0]);
+speakers14 = shuffle(speakers[13][0]);
+speakers15 = shuffle(speakers[14][0]);
+speakers16 = shuffle(speakers[15][0]);
+speakers17 = shuffle(speakers[16][0]);
+speakers18 = shuffle(speakers[17][0]);
+speakers19 = shuffle(speakers[18][0]);
+speakers20 = shuffle(speakers[19][0]);
+speakers21 = shuffle(speakers[20][0]);
+speakers22 = shuffle(speakers[21][0]);
+speakers23 = shuffle(speakers[22][0]);
+speakers24 = shuffle(speakers[23][0]);
+speakers25 = shuffle(speakers[24][0]);
 
 var sents = {
     states: {
@@ -338,17 +362,14 @@ var sents = {
             state: "0"
         },
         heart1: {
-            state: "25"
+            state: "33.33"
         },
         heart2: {
-            state: "50"
+            state: "66.66"
         },
         heart3: {
-            state: "75"
-        },
-        heart4: {
             state: "100"
-        }
+        },
 //        heart5: {
 //            state: "100"
 //        }
@@ -360,7 +381,16 @@ var sents = {
       }
     },
 
-    utterances: {
+     utterances: {
+        practice1: {
+            sent_utterance: " Did SP think the BB deserved 2 out of 3 hearts?"
+        },        
+        practice2: {
+            sent_utterance: " Did SP think the BB deserved 3 out of 3 hearts?"
+        },        
+        practice3: {
+            sent_utterance: " Did SP think the BB deserved 0 out of 3 hearts?"
+        },        
         yes_terrible: {
             sent_utterance: "<b>\"It was terrible\"</b>"
         },        
@@ -393,6 +423,24 @@ var sents = {
         },
    },
     domains: {
+       presentation_pr: {
+            sent_precontext: "Imagine that", 
+            sent_context: " LS approached SP, who had just seen LS's presentation, and asked \"How was my presentation?\"",
+            sent_context2: " SP saw a presentation.",
+            BB: "presentation",
+	},
+	   cookie_pr: {
+            sent_precontext: "Imagine that", 
+            sent_context: " LS approached SP, who had just tasted LS's cookie, and asked \"How did my cookie taste?\"", 
+            sent_context2: " SP tasted a cookie.",
+            BB: "cookie",
+	},
+	   poem_pr: {
+            sent_precontext: "Imagine that", 
+            sent_context: " LS approached SP, who had just read LS's poem, and asked \"How was my poem?\"", 
+            sent_context2: " SP read a poem.",
+            BB: "poem",
+	},        
         presentation: {
             sent_precontext: "Imagine that LS just gave a presentation, ",
             sent_context: " LS approached SP, who knows a lot about giving presentations, and asked \"How was my presentation?\"",
@@ -483,107 +531,135 @@ var sents = {
         social: {
             goal: " <b>If SP wanted to make LS feel good</b>, rather than give informative feedback,<br><br>"
         },
+        none: {
+            goal: "none"
+        },
     },
     people: {
         people1: {
             SP: speakers1[0],
             LS: speakers1[1],
+            Lpron: speakers[0][1]
         },
         people2: {
             SP: speakers2[0],
             LS: speakers2[1],
+            Lpron: speakers[1][1]
         },
         people3: {
             SP: speakers3[0],
             LS: speakers3[1],
+            Lpron: speakers[2][1]
         },
         people4: {
             SP: speakers4[0],
             LS: speakers4[1],
+            Lpron: speakers[3][1]
         },
         people5: {
             SP: speakers5[0],
             LS: speakers5[1],
+            Lpron: speakers[4][1]
         },
         people6: {
             SP: speakers6[0],
             LS: speakers6[1],
+            Lpron: speakers[5][1]
         },
         people7: {
             SP: speakers7[0],
             LS: speakers7[1],
+            Lpron: speakers[6][1]
         },
         people8: {
             SP: speakers8[0],
             LS: speakers8[1],
+            Lpron: speakers[7][1]
         },
         people9: {
             SP: speakers9[0],
             LS: speakers9[1],
+            Lpron: speakers[8][1]
         },
         people10: {
             SP: speakers10[0],
             LS: speakers10[1],
+            Lpron: speakers[9][1]
         },
         people11: {
             SP: speakers11[0],
             LS: speakers11[1],
+            Lpron: speakers[10][1]
         },
         people12: {
             SP: speakers12[0],
             LS: speakers12[1],
+            Lpron: speakers[11][1]
         },
         people13: {
             SP: speakers13[0],
             LS: speakers13[1],
+            Lpron: speakers[12][1]
         },
         people14: {
             SP: speakers14[0],
             LS: speakers14[1],
+            Lpron: speakers[13][1]
         },
         people15: {
             SP: speakers15[0],
             LS: speakers15[1],
+            Lpron: speakers[14][1]
         },
         people16: {
             SP: speakers16[0],
             LS: speakers16[1],
+            Lpron: speakers[15][1]
         },
         people17: {
             SP: speakers17[0],
             LS: speakers17[1],
+            Lpron: speakers[16][1]
         },
         people18: {
             SP: speakers18[0],
             LS: speakers18[1],
+            Lpron: speakers[17][1]
         },
         people19: {
             SP: speakers19[0],
             LS: speakers19[1],
+            Lpron: speakers[18][1]
         },
         people20: {
             SP: speakers20[0],
             LS: speakers20[1],
+            Lpron: speakers[19][1]
         },
         people21: {
             SP: speakers21[0],
             LS: speakers21[1],
+            Lpron: speakers[20][1]
         },
         people22: {
             SP: speakers22[0],
             LS: speakers22[1],
+            Lpron: speakers[21][1]
         },
         people23: {
             SP: speakers23[0],
             LS: speakers23[1],
+            Lpron: speakers[22][1]
         },
         people24: {
             SP: speakers24[0],
             LS: speakers24[1],
+            Lpron: speakers[23][1]
         },
         people25: {
             SP: speakers25[0],
             LS: speakers25[1],
+            Lpron: speakers[24][1]
         },
     }
 };
@@ -599,17 +675,19 @@ function doSentSubs(sents, polite, domain, utterance, people, goal, blank_uttera
     if (state_knowledge == "known") {
         knowledge = " <b>and LS knew it</b>."
     } else if (state_knowledge == "unknown") {
-        knowledge = " but LS didn't know how good it was."
+        knowledge = " but Lpron didn't know how good it was."
     }
 
-    feeling = "Here's how SP <b>actually</b> felt about LS's BB, on a scale of 0 to 4 hearts:"
+    feeling = "Here's how SP <b>actually</b> felt about LS's BB, on a scale of 0 to 3 hearts:"
+    feeling1 = "Here's how SP felt about the BB, on a scale of 0 to 3 hearts:"
     question0 = "GOAL"
-    question = "What would SP be most likely to say?"
+    question = "what would SP be most likely to say?"
     question2 = "How would SP <b>actually</b> rate LS's BB? <br>Please select the number of stars you think SP would actually give:";
     question3 = "Based on what SP said, how likely is it for you to <b>like SP</b>?";
     BB = sents["domains"][domain]["BB"]; //Item 2
     SP = sents["people"][people]["SP"]; //speaker
     LS = sents["people"][people]["LS"]; //addressee
+    Lpron = sents["people"][people]["Lpron"]; //addressee
 
     utterance = utterance.replace("BB", BB).replace("SP", SP).replace("LS", LS);
     blank_utterance = blank_utterance.replace("BB", BB).replace("SP", SP).replace("LS", LS);
@@ -621,17 +699,19 @@ function doSentSubs(sents, polite, domain, utterance, people, goal, blank_uttera
     question0 = question0.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS).replace("GOAL", goal).replace("LS", LS).replace("SP", SP);    
     question2 = question2.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS);
     question3 = question3.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS);
-    knowledge = knowledge.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS);
+    knowledge = knowledge.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS).replace("Lpron", Lpron);
     goal = goal.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS);
     feeling = feeling.replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS);
+    feeling1 = feeling1.replace("BB", BB).replace("BB", BB).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("SP", SP).replace("LS", LS).replace("LS", LS).replace("LS", LS);
 
 
-    return [utterance, context, state, precontext, question, question2, question3, knowledge, goal, feeling, context2, blank_utterance, question0];
+    return [utterance, context, state, precontext, question, question2, question3, feeling1, goal, feeling, context2, knowledge, question0];
 }
 
 var numConditions = allConditions.length;
 var chooseCondition = random(0, numConditions - 1);
-var allTrialOrders = allConditions[chooseCondition];
+//var allTrialOrders = allConditions[chooseCondition];
+var allTrialOrders = allConditions;
 var numTrials = allTrialOrders.length;
 var shuffledOrder = shuffledSampleArray(allTrialOrders.length, numTrials);
 var currentTrialNum = 0;
@@ -653,6 +733,8 @@ var experiment = {
         knowledge: state_knowledge,
         domain: [],
         state: [],
+        utterance: [],
+        judgment: [],
         posneg: [],
         keyword:[],
         people: [],
@@ -670,39 +752,79 @@ var experiment = {
         experiment.data.goal_thoughts.push(document.getElementById("goal_thoughts").value);
         experiment.data.expt_gen.push(document.getElementById("expcomments").value);
         showSlide("finished");
-
-        //    			//Decrement			
-        //			var xmlHttp = null;
-        //			xmlHttp = new XMLHttpRequest()
-        //			xmlHttp.open("GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/decrementer.php?filename=" + filename + "&to_decrement=" + cond, false);
-        //			xmlHttp.send(null)
-
-        const subject_id = jsPsych.randomization.randomID(10);
-        const filename = `${subject_id}.json`;
-      
-        const save_data = {
-          type: jsPsychPipe,
-          action: "save",
-          experiment_id: "7Ssa77jZ2BaU",
-          filename: filename,
-          data_string: ()=> JSON.stringify(experiment.data)
-        };
-        timeline.push(save_data)
-
-        const endMessage = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: '<div class="message"><p>You can now close this page.</p></div>',
-        choices: "NO_KEYS",
-        };
-        timeline.push(endMessage);
+        setTimeout(function () {
+            turk.submit(experiment.data)
+        }, 1500);
     },
+    
+    practice: function() {
+    // Allow experiment to start if it's a turk worker OR if it's a test run
+	if (window.self == window.top | turk.workerId.length > 0) {
+
+    if (numComplete > 0) {
+      var judgment = getRadioCheckedValue(0, "judgment");
+        
+      experiment.data.order.push(numComplete);
+      experiment.data.utterance.push(trial.utterance);
+      experiment.data.domain.push(trial.domain);
+      experiment.data.state.push(trial.state);
+      experiment.data.judgment.push(judgment);
+      
+      clearForm(document.forms[0]);
+      clearForm(document.forms[1]);
+      clearForm(document.forms[2]);
+
+      //Clear stars
+      $(".rating-stars").attr({"style":"width: 0%"});
+        
+    }
+    if (numComplete >= 3) {
+    	$('.bar').css('width', (200.0 * numComplete/numTrials) + 'px');
+    	$("#trial-num").html(numComplete);
+    	$("#total-num").html(numTrials);
+    	experiment.next();
+    } else {
+    	$('.bar').css('width', (200.0 * numComplete/numTrials) + 'px');
+    	$("#trial-num").html(numComplete);
+    	$("#total-num").html(numTrials);
+    	currentTrialNum = numComplete;
+    	trial = allTrialOrders[numComplete];
+//    	trial = allTrialOrders[shuffledOrder[numComplete]];
+        utterance = trial.utterance;
+        state = trial.state;
+        domain = trial.domain;
+        context = trial.context;
+        people = trial.people;
+        goal = trial.goal;
+        sent_materials = doSentSubs(sents, state, domain, utterance, people, goal);
+      showSlide("practice");
+//      $("#context").html(sent_materials[3] + sent_materials[1]);  
+//      $("#question").html(sent_materials[8]); 
+      $(".rating-stars").attr("style","width: " +
+							    state + "%");
+
+        //      $("#rating-stars").on("click", 
+//			    	function(event) {
+//						var selection = $("#rating-stars").val();
+//			});
+        
+      
+      for (var i = 0; i <= 4; i++)
+      {         
+        $("#score" + 10*i).html(score[i]);
+      }
+      $("#question2_pr").html(sent_materials[3] + sent_materials[10] + "<br><br>" + sent_materials[7]);    
+      $("#question3_pr").html(sent_materials[0]);    
+      numComplete++;      
+    }}
+  },
 
     next: function () {
-        // Allow experiment to start if it's a test run
+        // Allow experiment to start if it's a turk worker OR if it's a test run
         $('html,body').scrollTop(0);
-        if (window.self == window.top > 0) {
+        if (window.self == window.top | turk.workerId.length > 0) {
 
-            if (numComplete > 0) {
+            if (numComplete > 3) {
                 experiment.data.order.push(numComplete);
                 experiment.data.goal.push(trial.goal);
                 experiment.data.domain.push(trial.domain);
@@ -711,6 +833,8 @@ var experiment = {
                 experiment.data.keyword.push($("#keyword_choice").val()),
 
                 clearForm(document.forms[0]);
+                clearForm(document.forms[1]);
+                clearForm(document.forms[2]);
 
                 //Clear stars
                 $(".rating-stars").attr({
@@ -738,7 +862,7 @@ var experiment = {
                 goal = trial.goal;
                 sent_materials = doSentSubs(sents, state, domain, utterance, people, goal);
                 showSlide("stage");
-                $("#context").html(sent_materials[3] + sent_materials[7] + sent_materials[1]);
+                $("#context").html(sent_materials[3] + sent_materials[11] + sent_materials[1]);
 //                $("#context2").html(sent_materials[11]);
                 $("#question0").html(sent_materials[8] + sent_materials[4]);
                 $("#question2").html(sent_materials[0]);
