@@ -12,32 +12,32 @@ format:
 
 ## Introduction
 
-Polite speech poses a challenge for assumptions about accurate and efficient information transfer in communication in both classical Gricean pragmatics and more recent probabilistic pragmatics frameworks. For the sake of being polite, speakers opt for utterances that are indirect, underinformative, and sometimes even irrelevant or untruthful. To account for how polite speech arises, Yoon et al. (2020) propose a probabilistic cognitive model which is based on the Rational Speech Act (RSA) framework and incorporates three different informational and social utilities into its machinery. They hypothesize that underlying a speaker’s polite language use is a competition between three goals: to be informative, to be kind (to save the listener’s face), and to present oneself in a good light – quantitatively formalized as three separate weighted utilities (informational, prosocial, and self-presentational) contributing to the total utterance utility. Crucially, the model predictions and results of the authors' production experiment converge on the following polite speech pattern: when describing a bad state, a speaker whose goal is to be both informative and kind would produce more indirect, negated utterances - saying, for example, that something is "not bad" or "not terrible" even though they actually feel much more negatively about it. This replication project aims to reproduce this key finding in Yoon et al.'s (2020) production experiment.
+Polite speech poses a challenge for assumptions about communication as accurate and efficient information transfer in both classical Gricean pragmatics and more recent probabilistic pragmatics frameworks. For the sake of being polite, speakers opt for utterances that are indirect, underinformative, and sometimes even irrelevant or untruthful. To account for how polite speech arises, Yoon et al. (2020) propose a probabilistic cognitive model which is based on the Rational Speech Act (RSA) framework and incorporates three different informational and social utilities into its machinery. They hypothesize that underlying a speaker’s polite language use is a competition between three goals: to be informative, to be kind (to save the listener’s face), and to present oneself in a good light – quantitatively formalized as three separate weighted utilities (informational, prosocial, and self-presentational) contributing to the total utterance utility. Crucially, the model predictions and behavioral results converge on the following polite speech pattern: when describing a bad state, a speaker whose goal is to be both informative and kind would produce more indirect, negated utterances - saying, for example, that something is "not bad" or "not terrible" even though they actually feel much more negatively about it. This replication project aims to reproduce this key finding in Yoon et al.'s (2020) production experiment.
 
 
 ## Methods
 
 ### Power Analysis
+Yoon et al. (2020) analyzed behavioral data from 202 participants in their production experiment using a Bayesian mixed-effects model. The model revealed strong interaction effects between true state and the speaker's goal with tight 95% Bayesian credible intervals that did not include zero: In worse states, speakers whose goal was to be both informative and kind produced more negation than speakers whose goal was only to be informative (95% Bayesian CI: [−1.69, −0.98]) or only to be kind (95% Bayesian CI: [−0.92, −0.07]). 
 
-Original effect size, power analysis for samples to achieve 80%, 90%, 95% power to detect that effect size.  Considerations of feasibility for selecting planned sample size.
 
 ### Planned Sample
 
-Planned sample size and/or termination rule, sampling frame, known demographics if any, preselection rules if any.
+Given those statistically robust effects found in the original study with 202 participants and the relatively low number of trials per participant, I plan to use a matching sample size of 202. Using the same sample size would also facilitate a more direct, one-to-one comparison of the observed effects between the original and replication study.
 
 ### Materials
 
-The experiment has a 4x3 factorial design: true state (0, 1, 2, 3 hearts) x speaker’s goals (informative, kind, both).
+The experiment has a 4x3 factorial design: true state (0, 1, 2, 3 hearts) and speaker’s goal (informative, kind, both). Each participant is given 12 context items depicting each of the 12 conditions in randomized order. In every context item, the speaker is supposed to tell the listener what they think about something the listener created. The list from which the listener's creative work is drawn for each context item includes: "poem","cake","cookie","presentation","song","film","solo","monologue","dance","painting","app","review", "recital". The speaker's goal and task prompt for participants are given in the form of a conditional question that reads: “If [speaker's name] wanted to make [listener's name] feel good but not necessarily give accurate and informative feedback (or give accurate and informative feedback but not necessarily make [listener's name] feel good, or BOTH make [listener's name] feel good AND give accurate and informative feedback), what would [speaker's name] be most likely to say?”
 
 ### Procedure	
 
-First, participants read a scenario where person A doesn’t know how good their creative work is and ask for person B’s opinion on it. Then, they are given 2 pieces of information: (i) how B truly feels about A’s creative work shown in the form of red hearts, and (ii) what B’s goals in communicating an answer to A are.
-Finally, they are asked to indicate what the speaker B would most likely say given those two pieces of information. Formula for indicating speaker B’s most likely production: It + was/wasn’t (chosen from dropdown menu) + terrible/bad/good/amazing (chosen from dropdown menu) 
+First, participants read a scenario where person A doesn’t know how good their creative work is and asks for person B’s opinion on it. Then, they are given 2 pieces of information: (i) how B truly feels about A’s creative work shown as a number of red hearts, and (ii) what B’s goal in communicating an answer to A is
+Finally, they are asked to indicate what person B would most likely say given those two pieces of information. Formula for indicating person B’s most likely production: It + was/wasn’t (chosen from a dropdown menu) + terrible/bad/good/amazing (chosen from a dropdown menu). 
 
 
 ### Analysis Plan
 
-Can also quote directly, though it is less often spelled out effectively for an analysis strategy section.  The key is to report an analysis strategy that is as close to the original - data cleaning rules, data exclusion rules, covariates, etc. - as possible.  
+I plan to analyze the data using a Bayesian mixed-effects model following Yoon et al.'s (2020) analysis script.
 
 **Clarify key analysis of interest here**  You can also pre-specify additional analyses you plan to do.
 
