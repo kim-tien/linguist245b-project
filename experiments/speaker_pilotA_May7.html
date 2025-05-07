@@ -419,7 +419,7 @@ const completion = {
       <h1 style="color: #8C1515;">Thank you!</h2>
       <p>The experiment is now complete.</p>
       <p>You can click the button below to submit your responses.
-      <p>Please do <b>NOT</b> close this browser tab while your responses are being saved!</p>
+      <p>Please do <b>NOT</b> close this page while your responses are being saved!</p>
     </div>
   `,
   button_html: '<button class="jspsych-btn" style="margin-top:20px; margin-bottom:200px;">%choice%</button>',
@@ -487,7 +487,7 @@ timeline.push(save_data);
 
   const endMessage = {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<div class="message" style="font-size: 30"><p>Thank you for your patience!</p> <p>You can now close this browser tab.</p></div>',
+    stimulus: '<div class="message" style="font-size: 30"><p>Thank you for your patience!</p> <p>You can now close this page.</p></div>',
     choices: "NO_KEYS",
     on_start: () => jsPsych.setProgressBar(1.0)
     };
