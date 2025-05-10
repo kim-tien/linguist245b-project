@@ -323,8 +323,11 @@ const itemTemplates = {
 /* ===============================================================
    7.  INSTRUCTION PAGE
 ================================================================ */
-// ─── Capture page‐load timestamp for storing participant's data file ───
+// Capture page‐load timestamp for storing participant's data file
+// as timestamp plus unique random suffix (e.g., 05092025_21-37-04_a1b2c3.csv)
+// 1) padding helper
 const pad = n => n.toString().padStart(2, '0');
+// 2) capture page‐load time
 const now = new Date();
 const MM   = pad(now.getMonth() + 1);
 const DD   = pad(now.getDate());
@@ -332,8 +335,10 @@ const YYYY = now.getFullYear();
 const hh   = pad(now.getHours());
 const mm   = pad(now.getMinutes());
 const ss   = pad(now.getSeconds());
-// e.g. "05092025_21-37-04"
-const timestampID = `${MM}${DD}${YYYY}_${hh}-${mm}-${ss}`;
+// 3) make a short random string (6 chars from letters+digits)
+const randomSuffix = jsPsych.randomization.randomID(6);
+// 4) combine into one ID: MMDDYYYY_hh-mm-ss_xxxxxx
+const participantID = `${MM}${DD}${YYYY}_${hh}-${mm}-${ss}_${randomSuffix}`;
 
 
 const instructions = {
@@ -484,7 +489,7 @@ const save_data = {
   type: jsPsychPipe,
   action: "save",
   experiment_id: "7Ssa77jZ2BaU",
-  filename: `${timestampID}.csv`,
+  filename: `${participantID}.csv`,
 
   data_string: () => {
   const trials = jsPsych
