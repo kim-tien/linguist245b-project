@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>A Language Production Study</title>
+  <title>A quick study to predict what people say</title>
   <!-- Load JsPsych -->
   <script src="https://unpkg.com/jspsych@7.3.4"></script>
   <script src="https://unpkg.com/@jspsych/plugin-instructions@1.1.4"></script>
@@ -13,6 +13,34 @@
   
    <!-- ------------  GLOBAL CSS ------------ -->
    <style>
+    #jspsych-progressbar-container {
+      background-color: #8C1515;
+      font-weight: bold;
+      color:#ffffff;
+      padding: 10px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    #jspsych-progressbar-outer {
+      width: 90%;
+      margin: 0 auto;
+      height: 10px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #jspsych-progressbar-inner {
+      height: 100%;
+      background: linear-gradient(to right, #f0f2f7, #175E54);
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 8px;
+    }
+   </style>
+
+   <style>
     /* ----- IRB page ----- */
     .IRBstyl .wrapper{ max-width:1080px; margin:0 auto; }
     
@@ -20,6 +48,7 @@
         font-size:16px;
         line-height:1.45;
         text-align:justify;
+        color:#8C1515;
         margin:0 0 0;
     }
 
@@ -34,10 +63,10 @@
     .IRBstyl .jspsych-btn{  /* style "START" button */
           display:inline-block;
           padding:8px 55px;
-          margin:10px auto 200px;
+          margin:0px auto 200px;
           font-size:18px;
           font-weight:700; /* in bold */
-          background-color:#000056; 
+          background-color:#175E54; 
           color:#ffff;           
           border:none; /* remove default border/gradient */
           border-radius:4px; /* soft corners */
@@ -46,19 +75,14 @@
         }
     .IRBstyl .jspsych-btn:hover,
     .IRBstyl .jspsych-btn:focus{
-        background:#00007A; /* slightly lighter hover */
+        background:#1C7266; /* slightly lighter hover */
     }
   </style>
    
    <style>
     /* ----- Instruction page ----- */
     .instyl .wrapper{ max-width:1080px; margin:0 auto; }
-    .instyl h1{
-        color:#8C1515; /* cardinal red */  
-        font:30px 1000px; /* size & weight */
-        text-align:center;
-        margin:10px 0 45px;
-    }
+    
     .instyl p{
         font-size:16px;
         line-height:1.45;
@@ -73,7 +97,7 @@
           margin:15px auto 200px;
           font-size:18px;
           font-weight:700; /* in bold */
-          background-color:#000056; 
+          background-color:#175E54; 
           color:#ffff;           
           border:none; /* remove default border/gradient */
           border-radius:4px; /* soft corners */
@@ -82,7 +106,7 @@
         }
     .instyl .jspsych-btn:hover,
     .instyl .jspsych-btn:focus{
-        background:#00007A; /* slightly lighter hover */
+        background:#1C7266; /* slightly lighter hover */
     }
   </style>
   
@@ -103,7 +127,7 @@
       display: block;           /* make it a block so auto-margins work */
       margin: 0 0 100px auto;   /* top:0, right:0, bottom:100px, left:auto → right-align */
           padding: 8px 55px;
-          background-color:#006400;
+          background-color:#175E54;
           color:#ffff;
           font-size:16px;
           font-weight:700; 
@@ -111,7 +135,7 @@
           border-radius:4px;
           cursor:pointer;
         }
-    .trialDesign .jspsych-btn:hover{background:#009000;}
+    .trialDesign .jspsych-btn:hover{background:#1C7266;}
   </style>  
 
 <style>
@@ -120,7 +144,7 @@
     padding: 8px 55px;
     font-size: 18px;
     font-weight: 700;
-    background-color: #000056;
+    background-color: #175E54;
     color: #ffff;
     border: none;
     border-radius: 4px;
@@ -129,7 +153,7 @@
     margin: 0 auto 200; 
   }
   .completion-screen .jspsych-btn:hover {
-    background-color: #00007A;
+    background-color: #1C7266;
   }
 
   .completion-screen {
@@ -167,7 +191,7 @@
       display:inline-block;
       padding: 8px 55px;
       margin:50px auto 200px;
-      background-color:#006400;
+      background-color:#175E54;
       color:#ffff;
       font-size:16px;
       font-weight:700; 
@@ -175,7 +199,7 @@
       border-radius:4px;
       cursor:pointer;
         }
-    .survstyle .jspsych-btn:hover{background:#009000;}
+    .survstyle .jspsych-btn:hover{background:#1C7266;}
 </style>
     
 </head>
@@ -431,8 +455,8 @@ const consent= {
       <!---------- HEADER ---------->
           <p style="
               color:#8C1515;
-              font-size:24px;
-              font-weight:700;
+              font-size:26px;
+              font-weight:1000;
               text-align:center;
               margin-top:10px;
               margin-bottom:25px;">
@@ -443,28 +467,28 @@ const consent= {
         <br>Protocol Title: Communication and social cognition in natural audiovisual contexts</br>IRB# 77226</br>
       </p>
 
-      <h3 style="text-align: center;"><strong>DESCRIPTION</strong></h3>
+      <h3 style="text-align: justify; color: #8C1515;"><strong>DESCRIPTION</strong></h3>
       <p>You are invited to participate in a research study about language and communication. The purpose of the research is to understand how you interact and communicate with other people in naturalistic settings as a fluent English speaker. This research will be conducted through the Prolific platform, including participants from the US, UK, and Canada. If you decide to participate in this research, you will answer questions about what you think people would say in given scenarios.</p>
 
-      <h3 style="text-align: center;"><strong>TIME INVOLVEMENT</strong></h3>
+      <h3><strong>TIME INVOLVEMENT</strong></h3>
       <p>The task will last the amount of time advertised on Prolific. You are free to withdraw from the study at any time.</p>
 
-      <h3 style="text-align: center;"><strong>RISKS AND BENEFITS</strong></h3>
+      <h3><strong>RISKS AND BENEFITS</strong></h3>
       <p>Study data will be stored securely, in compliance with Stanford University standards, minimizing the risk of confidentiality breach. This study advances our scientific understanding of how people com-munication and collaborate in naturalistic settings. This study may lead to further insights about what can go wrong in teamwork, suggest potential interventions to overcome these barriers, and help to develop assistive technologies that collaborate with human partners. <b>We cannot and do not guarantee or promise that you will receive any benefits from this study.</b></p>
 
-      <h3 style="text-align: center;"><strong>PAYMENTS</strong></h3>
-      <p>You will receive payment in the amount advertised on Prolific. If you do not complete this study, you will receive prorated payment based on the time that you have spent. Additionally, you may be eli-gible for bonus payments as described in the instructions.</p>
+      <h3><strong>PAYMENTS</strong></h3>
+      <p>You will receive payment in the amount advertised on Prolific. If you do not complete this study, you will receive prorated payment based on the time that you have spent. Additionally, you may be eligible for bonus payments as described in the instructions.</p>
 
-      <h3 style="text-align: center;"><strong>PARTICIPANT'S RIGHTS</strong></h3>
+      <h3><strong>PARTICIPANT'S RIGHTS</strong></h3>
       <p>If you have read this form and have decided to participate in this project, please understand your <b>participation is voluntary</b> and you have the <b>right to withdraw your consent or discontinue participation at any time without penalty or loss of benefits to which you are otherwise entitled. The alternative is not to participate.</b> You have the right to refuse to answer particular questions. The results of this research study may be presented at scientific or professional meetings or published in scientific journals. Your individual privacy will be maintained in all published and writ-ten data resulting from the study. In accordance with scientific norms, the data from this study may be used or shared with other researchers for future research (after removing personally identifying information) without additional consent from you. </p>
 
-      <h3 style="text-align: center;"><strong>CONTACT INFORMATION</strong>:</h3>
+      <h3><strong>CONTACT INFORMATION</strong>:</h3>
       <p><b>Questions:</b> If you have any questions, concerns or complaints about this research, its procedures, risks and benefits, contact the Protocol Director, Robert Hawkins (rdhawkins@stanford.edu, 217-549-6923).
       <br><b>Independent Contact:</b> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnon-med@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306.</br>
       
       <p>Please save or print a copy of this page for your records.</p>
 
-      <p style="font-size:18px;text-align:center;margin:30px 50px;"><b>If you agree to participate in this research, please click “continue”.</b></p>
+      <p style="font-size:18px;text-align:center;margin:30px 50px;color: #175E54"><b>If you agree to participate in this research, please click “Continue”.</b></p>
       </div>
       `,
       choices: ['Continue'],
@@ -489,7 +513,7 @@ const instructions = {
           <!---------- HEADER ---------->
           <p style="
               color:#8C1515;
-              font-size:24px;
+              font-size:26px;
               font-weight:700;
               text-align:center;
               margin-top:10px;
@@ -501,12 +525,13 @@ const instructions = {
           <p style="font-size:16px;text-align:justify;margin-bottom:15px;">
             In this experiment, you will read scenarios describing hypothetical interactions between two people 
             and see one person's true opinion indicated on a scale of 0 to 3 hearts. 
-            (Below is an example of what 2 out of 3 hearts looks like.)
             Your task is to predict what this person would say given their true opinion.
             It's important that you read the scenarios and questions carefully before answering. 
             To indicate your answer, simply select one option from each of the two drop‑down menus 
             provided below each question.
           </p>
+
+          <p>This is an example of what it looks like when 2 out of 3 hearts are filled:</p>
 
           <!-- Example image centered with a bit of bottom margin -->
           <div style="text-align:center; margin-bottom:20px;">
@@ -615,7 +640,7 @@ timeline.push({
       <textarea name="goal_thoughts"></textarea>
 
       <label>Any general comments about the experiment?</label>
-      <textarea name="expt_gen"></textarea>
+      <textarea name="expt_general"></textarea>
 
     </div>
   `,
@@ -632,7 +657,7 @@ const completion = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="completion">
-      <h1 style="color: #8C1515;">Thank you!</h2>
+      <h1 style="color: #8C1515;font-size: 26px">Thank you!</h1>
       <p>The experiment is now complete.</p>
       <p>You can click the button below to submit your responses.
       <p>Please do <b>NOT</b> close this page while your responses are being saved!</p>
@@ -647,54 +672,85 @@ timeline.push(completion);
 
 
 // save data: custom csv structure → jsPsychPipe
-const subject_id = jsPsych.randomization.randomID(10);
-
+// save data: custom csv structure → jsPsychPipe
 const save_data = {
   type: jsPsychPipe,
   action: "save",
   experiment_id: "7Ssa77jZ2BaU",
-  filename: `${participantID}.csv`,
+  filename: `${participantID}.csv`,    // participantID already defined above
 
   data_string: () => {
-  const trials = jsPsych
-    .data
-    .get()
-    .filter({ trial_type: 'survey-html-form' })
-    .values();
+    // 1) grab all survey-html-form trials (12 choice + 1 debrief)
+    const allForms = jsPsych
+      .data
+      .get()
+      .filter({ trial_type: 'survey-html-form' })
+      .values();
 
-  const header = [
-    'trial',
-    'item',
-    'goal',
-    'true_state',
-    'positivity',
-    'utterance',
-    'rt',
-    'time_elapsed'
-  ];
+    // 2) find the debrief (it has no 'order' field)
+    const debriefTrial = allForms.find(d => d.order == null) || {};
 
-  const rows = trials.map(d => {
-    // Safe‐parse response field
-    const resp = (typeof d.response === 'string')
-      ? JSON.parse(d.response)
-      : d.response;
+    // safely pull the raw JSON string from whichever property exists
+    const rawDebrief = debriefTrial.responses ?? debriefTrial.response ?? '{}';
+    const debriefResp = typeof rawDebrief === 'string'
+      ? JSON.parse(rawDebrief)
+      : rawDebrief;
 
-    return [
-      d.trial_index,
-      d.item,
-      d.goal,
-      d.state,
-      resp.posneg,  // works whether resp was a string or object
-      resp.keyword,
-      d.rt,
-      d.time_elapsed
-    ].join(',');
-  });
+    // 3) extract the four debrief answers (fall back to empty strings)
+    const language      = debriefResp.language      || '';
+    const expt_aim      = debriefResp.expt_aim      || '';
+    const goal_thoughts = debriefResp.goal_thoughts || '';
+    const expt_general  = debriefResp.expt_general      || '';
 
-  return [ header.join(','), ...rows ].join('\r\n');
-}
+    // 4) filter to the 12 choice trials (those *do* have an order), and sort by it
+    const trials = allForms
+      .filter(d => d.order != null)
+      .sort((a,b) => a.order - b.order);
+
+    // 5) build the CSV header (add your 4 debrief columns)
+    const header = [
+      'trial',
+      'item',
+      'goal',
+      'true_state',
+      'positivity',
+      'utterance',
+      'language',
+      'expt_aim',
+      'goal_thoughts',
+      'expt_general'
+    ];
+
+    // 6) map each choice trial → one CSV row
+    const rows = trials.map((d, i) => {
+      // again safely get the participant’s two-drop-down response
+      const raw = d.responses ?? d.response ?? '{}';
+      const resp = typeof raw === 'string'
+        ? JSON.parse(raw)
+        : raw;
+
+      return [
+        i + 1,           // trial number 1…12
+        d.item,
+        d.goal,
+        d.state,         // your “true_state”
+        resp.posneg,
+        resp.keyword,
+        // the same debrief answers on every line:
+        language,
+        expt_aim,
+        goal_thoughts,
+        expt_general
+      ].join(',');
+    });
+
+    // 7) stitch header + rows together
+    return [ header.join(','), ...rows ].join('\r\n');
+  }
 };
+
 timeline.push(save_data);
+
 
 
 const endMessage = {
