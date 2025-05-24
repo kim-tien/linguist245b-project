@@ -454,23 +454,27 @@ const consent= {
       </p>
 
       <h3 style="text-align: justify; color: #8C1515;"><strong>DESCRIPTION</strong></h3>
-      <p>You are invited to participate in a research study about language and communication. The purpose of the research is to understand how you interact and communicate with other people in naturalistic settings as a fluent English speaker. This research will be conducted through the Prolific platform, including participants from the US, UK, and Canada. If you decide to participate in this research, you will answer questions about what you think people would say in given scenarios.</p>
+      <p>You are invited to participate in a research study about language and communication. The purpose of the research is to understand how you interact and communicate with other people in naturalistic settings as a fluent English speaker. This research will be conducted through the Prolific platform, including participants from the US, UK, and Canada. If you decide to participate in this research, you will play a communication game in a group with one or more partners.</p>
 
       <h3><strong>TIME INVOLVEMENT</strong></h3>
       <p>The task will last the amount of time advertised on Prolific. You are free to withdraw from the study at any time.</p>
 
       <h3><strong>RISKS AND BENEFITS</strong></h3>
-      <p>Study data will be stored securely, in compliance with Stanford University standards, minimizing the risk of confidentiality breach. This study advances our scientific understanding of how people com-munication and collaborate in naturalistic settings. This study may lead to further insights about what can go wrong in teamwork, suggest potential interventions to overcome these barriers, and help to develop assistive technologies that collaborate with human partners. <b>We cannot and do not guarantee or promise that you will receive any benefits from this study.</b></p>
+      <p>You may become frustrated if your partner gets distracted, or experience discomfort if other participants in your group send text that is inappropriate for the task. We ask you to please be respectful of other participants you might be interacting with to mitigate these risks. You may also experience discomfort when being asked to discuss or challenge emotionally salient political beliefs. Study data will be stored securely, in compliance with Stanford University standards, minimizing the risk of con-fidentiality breach. This study advances our scientific understanding of how people communication and collaborate in naturalistic settings. This study may lead to further insights about what can go wrong in teamwork, suggest potential interventions to overcome these barriers, and help to develop assistive technologies that collaborate with human partners.<b>We cannot and do not guarantee or promise that you will receive any benefits from this study.</b></p>
 
       <h3><strong>PAYMENTS</strong></h3>
-      <p>You will receive payment in the amount advertised on Prolific. If you do not complete this study, you will receive prorated payment based on the time that you have spent. Additionally, you may be eligible for bonus payments as described in the instructions.</p>
+      <p>You will receive payment in the amount advertised on Prolific. If you do not complete this study, you will receive prorated payment based on the time that you have spent. Additionally, you may be eli-gible for bonus payments as described in the instructions.</p>
 
       <h3><strong>PARTICIPANT'S RIGHTS</strong></h3>
-      <p>If you have read this form and have decided to participate in this project, please understand your <b>participation is voluntary</b> and you have the <b>right to withdraw your consent or discontinue participation at any time without penalty or loss of benefits to which you are otherwise entitled. The alternative is not to participate.</b> You have the right to refuse to answer particular questions. The results of this research study may be presented at scientific or professional meetings or published in scientific journals. Your individual privacy will be maintained in all published and writ-ten data resulting from the study. In accordance with scientific norms, the data from this study may be used or shared with other researchers for future research (after removing personally identifying information) without additional consent from you. </p>
+      <p>If you have read this form and have decided to participate in this project, please understand your <b>participation is voluntary</b>
+        and you have the <b>right to withdraw your consent or discontinue participation at any time without penalty or loss of benefits to which you are otherwise entitled. The alternative is not to participate.</b> 
+        You have the right to refuse to answer particular questions. The results of this research study may be presented at scientific or professional meetings or published in scientific journals. Your individual privacy will be maintained in all published and written data resulting from the study. In accordance with scientific norms, the data from this study may be used or shared with other researchers for fu-ture research (after removing personally identifying information) without additional consent from you.</p>
 
       <h3><strong>CONTACT INFORMATION</strong>:</h3>
-      <p><b>Questions:</b> If you have any questions, concerns or complaints about this research, its procedures, risks and benefits, contact the Protocol Director, Robert Hawkins (rdhawkins@stanford.edu, 217-549-6923).
-      <br><b>Independent Contact:</b> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnon-med@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306.</br>
+      <p><b>Questions:</b> If you have any questions, concerns or complaints about this research, its procedures, risks and ben-efits, contact the Protocol Director, 
+        Robert Hawkins (rdhawkins@stanford.edu, 217-549-6923).
+
+      <br><b>Independent Contact:</b> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnonmed@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306. Please save or print a copy of this page for your records.</br>
       
       <p>Please save or print a copy of this page for your records.</p>
 
@@ -661,7 +665,7 @@ timeline.push(completion);
 const save_data = {
   type: jsPsychPipe,
   action: "save",
-  experiment_id: "7Ssa77jZ2BaU",
+  experiment_id: "syNE2kq9Zal0",
   
   // ----- formating the filename for saved data -----
   filename: () => {
@@ -682,8 +686,11 @@ const save_data = {
       // duration in whole minutes
       const minutes = Math.round((end - timestampStart) / 60000);
 
-      // e.g. "05172025_01-49_01-56_7min.csv"
-      return `${MM}${DD}${YYYY}_${sHH}-${sMin}_${eHH}-${eMin}_${minutes}min.csv`;
+      // make a short random string (4 chars from letters+digits)
+      const randomSuffix = jsPsych.randomization.randomID(4);
+
+      // e.g. "05172025_01-49_01-56_7min_XXXX.csv"
+      return `${MM}${DD}${YYYY}_${sHH}-${sMin}_${eHH}-${eMin}_${minutes}min_${randomSuffix}.csv`;
   },
 
   // ----- building csv file structure -----
