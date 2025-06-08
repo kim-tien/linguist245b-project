@@ -1,0 +1,709 @@
+---
+title: "Analysis for Replication of Speaker Production Experiment in Yoon et al. (2020) "
+author: "Kim Tien Nguyen"
+date: "June 7, 2025"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    code_folding: hide
+    df_print: paged
+---
+
+############## Setup ##############  
+
+```{r setup, include=FALSE}
+# Install & load required packages
+required_pkgs <- c(
+  "readr", "dplyr","tidyr",  "stringr", "rstan",
+  "rstanarm", "broom.mixed", "ggplot2", "patchwork", "lme4"
+)
+new_pkgs <- setdiff(required_pkgs, rownames(installed.packages()))
+if (length(new_pkgs)) install.packages(new_pkgs)
+
+library(readr)
+library(stringr)
+library(rstanarm)     # stan_glmer
+library(broom.mixed)  # tidy()
+library(lme4)
+library(patchwork)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+library(forcats)
+
+# Use all cores for sampling
+options(mc.cores = parallel::detectCores())
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 6,
+  fig.height = 4
+)
+```
+
+############## Preprocessing replication data ##############
+```{r create-replication_data_csv}
+# (A) Set wd to source file location (the "analysis" folder) and point to "full sample" folder
+data_dir <- "../data/full sample"
+
+# (B) Grab a sorted list of all CSVs in "full sample" folder
+files <- list.files(
+  path       = data_dir,
+  pattern    = "\\.csv$",
+  full.names = TRUE
+  )
+
+# (C) Read + process + bind
+replication_data <- map_dfr(
+  .x   = seq_along(files),
+  .f   = function(i) {
+    read_csv(files[i], col_types = cols()) %>%      # read file #i
+      transmute(
+        subid       = i,
+        trial,
+        item,
+        goal,
+        true_state,
+        positivity = recode(positivity,"was" = "no_neg", "wasn't" = "neg"),
+        utterance
+      )
+    }
+  )
+
+# (D) Write out the combined CSV with all 202 participants
+write_csv(replication_data, "../data/replication_data.csv")
+```
+
+
+######################################### BAYESIAN ANALYSIS ########################################   
+
+############################### ORIGINAL DATA ###############################
+
+#################### OG.1. Load & Preprocess Data #################### 
+
+```{r load-data}
+###### Load ###### 
+# The original "speaker_production.csv" file provided by the authors was downloaded, 
+# renamed as "original_data.csv" for ease of reference, and 
+# saved in the same "data" folder as the preprocessed "replication_data.csv" file above
+og_raw  <- read_csv("../data/original_data.csv",   col_types = cols())
+
+###### Preprocess ###### 
+og_data <- og_raw %>%
+  mutate(
+    # (A) Make positivity numeric (same code as the authors for their glmer and brm functions):
+    #     Factor levels in alphabetical order by default: 
+    #     Level 1: "neg" (saying “It wasn’t …”) → positivity = 0
+    #     Level 2: "no_neg" (saying “It was …”) → positivity = 1
+    positivity = factor(positivity, labels = c(0,1)), 
+    positivity = as.numeric(as.character(positivity)),
+    
+    # (B) Scale true_state the way the authors did (zero‐center + divide by sd):
+    #     raw column: "heart0", "heart1", "heart2", "heart3"
+    true_state = as.numeric(substr(true_state, 6, 6)),   # 0,1,2,3
+    true_state = scale(true_state),                  # zero‐mean, unit‐SD
+
+    # (C) Force “both” to be the reference level in goal:
+    goal = factor(goal, levels = c("both", "informative", "social")),
+
+    # (D) Make subid and item factors
+    subid = factor(subid),
+    item  = factor(item),
+    ) %>%
+  select(
+    subid, trial, item,
+    goal, true_state, 
+    positivity, # Now  “It wasn't …” = 0, “It was …” = 1,
+    utterance,
+  )
+
+summary(og_data$true_state)   # mean ≈ 0, sd ≈ 1
+```
+
+
+############ OG.2. Fit Bayesian Mixed‐Effects Model ############  
+
+```{r fit-model}
+###### OG.2.1. Fit the model: positivity ###### 
+
+fit_og <- stan_glmer(
+  positivity ~ true_state * goal
+           + (true_state + goal | subid)
+           + (true_state + goal | item),
+
+  data            = og_data,         
+  family          = binomial(link = "logit"),
+
+  # (A) Fixed‐effects priors: Normal(0,1) exactly as in brms
+  prior           = normal(0, 1),    # class = "b"
+  prior_intercept = normal(0, 1),    # class = "Intercept"
+
+  # (B) Random‐effects priors: approximate brm's default Student-t(3,0,2.5) on each SD via decov
+  #    decov(regularization=6.25, concentration=1)
+  prior_covariance = decov(
+    regularization = 6.25,  # scale = sqrt(6.25) = 2.5  (correct scale)
+    concentration  = 1      # LKJ(η=1) on correlation
+  ),
+
+  # (C) MCMC settings (match brms defaults)
+  chains      = 4,
+  iter        = 2000,   # 1000 warmup + 1000 sampling
+  warmup      = 1000,
+  thin        = 1,
+  adapt_delta = 0.8,
+  seed        = 1234
+)
+
+# Print the fixed‐effects summary
+print(fit_og, digits = 2)
+
+
+###### OG.2.2. Fixed‐Effects Summary Table ###### 
+fixed_og_tbl <- tidy(
+  fit_og,
+  effects  = "fixed",
+  conf.int = TRUE
+) %>%
+  rename(
+    Predictor     = term,
+    Mean          = estimate,
+    SD            = std.error,
+    `95% CI-Lower` = conf.low,
+    `95% CI-Upper` = conf.high
+  ) %>%
+  mutate(
+    Predictor = recode(
+      Predictor,
+      `(Intercept)`                = "Intercept",
+      `true_state`                 = "True state",
+      `goalinformative`            = "Goal: Informative",
+      `goalsocial`                 = "Goal: Kind",
+      `true_state:goalinformative` = "True state * Informative",
+      `true_state:goalsocial`      = "True state * Kind"
+    )
+  ) %>%
+  select(Predictor, Mean, SD, `95% CI-Lower`, `95% CI-Upper`)
+
+knitr::kable(
+  fixed_og_tbl,
+  digits  = 2,
+  caption = "Table 1 (Original): Posterior Summary for Fixed Effects"
+)
+```
+
+
+############################### REPLICATION DATA ###############################
+
+#################### REP.1. Load & Preprocess Data #################### 
+
+```{r load-data}
+###### Load ###### 
+rep_raw <- read_csv("../data/replication_data.csv",     col_types = cols())
+
+###### Process ###### 
+rep_data <- rep_raw %>%
+  mutate(
+    # (A) Make positivity numeric (same code as the authors for their glmer and brm functions):
+    #     Factor levels in alphabetical order by default: 
+    #     Level 1: "neg" (saying “It wasn’t …”) → positivity = 0
+    #     Level 2: "no_neg" (saying “It was …”) → positivity = 1
+    positivity = factor(positivity, labels = c(0,1)), 
+    positivity = as.numeric(as.character(positivity)),
+    
+    # (B) Scale true_state the way the authors did (zero‐center + divide by sd):
+    #     raw column: "heart0", "heart1", "heart2", "heart3"
+    true_state = as.numeric(substr(true_state, 6, 6)),   # 0,1,2,3
+    true_state = scale(true_state),                  # zero‐mean, unit‐SD
+
+    # (C) Force “both” to be the reference level in goal:
+    goal = factor(goal, levels = c("both", "informative", "social")),
+
+    # (D) Make subid and item factors
+    subid = factor(subid),
+    item  = factor(item),
+    ) %>%
+  select(
+    subid, trial, item,
+    goal, true_state, 
+    positivity, # Now  “It wasn't …” = 0, “It was …” = 1,
+    utterance,
+  )
+
+summary(rep_data$true_state)   # mean ≈ 0, sd ≈ 1
+```
+
+#################### REP.2. Fit Bayesian Mixed‐Effects Model #################### 
+
+```{r fit-model}
+######### REP.2.1. Fit the model: positivity #########
+
+fit_rep <- stan_glmer(
+  positivity ~ true_state * goal
+           + (true_state + goal | subid)
+           + (true_state + goal | item),
+
+  data            = rep_data,         
+  family          = binomial(link = "logit"),
+
+  # (A) Fixed‐effects priors: Normal(0,1) exactly as in brms
+  prior           = normal(0, 1),    # class = "b"
+  prior_intercept = normal(0, 1),    # class = "Intercept"
+
+  # (B) Random‐effects priors: approximate brm's default Student-t(3,0,2.5) on each SD via decov
+  #    decov(regularization=6.25, concentration=1)
+  prior_covariance = decov(
+    regularization = 6.25,  # scale = sqrt(6.25) = 2.5  (correct scale)
+    concentration  = 1      # LKJ(η=1) on correlation
+  ),
+
+  # (C) MCMC settings (match brms defaults)
+  chains      = 4,
+  iter        = 2000,   # 1000 warmup + 1000 sampling
+  warmup      = 1000,
+  thin        = 1,
+  adapt_delta = 0.8,
+  seed        = 1234
+)
+
+# Print the fixed‐effects summary
+print(fit_rep, digits = 2)
+
+
+######### REP.2.2. Fixed‐Effects Summary Table #########
+fixed_rep_tbl <- tidy(
+  fit_rep,
+  effects  = "fixed",
+  conf.int = TRUE
+) %>%
+  rename(
+    Predictor     = term,
+    Mean          = estimate,
+    SD            = std.error,
+    `95% CI-Lower` = conf.low,
+    `95% CI-Upper` = conf.high
+  ) %>%
+  mutate(
+    Predictor = recode(
+      Predictor,
+      `(Intercept)`                = "Intercept",
+      `true_state`                 = "True state",
+      `goalinformative`            = "Goal: Informative",
+      `goalsocial`                 = "Goal: Kind",
+      `true_state:goalinformative` = "True state * Informative",
+      `true_state:goalsocial`      = "True state * Kind"
+    )
+  ) %>%
+  select(Predictor, Mean, SD, `95% CI-Lower`, `95% CI-Upper`)
+
+knitr::kable(
+  fixed_rep_tbl,
+  digits  = 2,
+  caption = "Table 2 (Replication): Posterior Summary for Fixed Effects"
+)
+```
+
+
+
+######################################### FREQUENTIST ANALYSIS ########################################
+
+##### Original frequentist model
+```{r original-frequentist-model}
+og_glmer <- og_raw %>%
+  mutate(
+    positivity = factor(positivity, labels = c(0,1)), 
+    positivity = as.numeric(as.character(positivity)),
+    true_state = as.numeric(substr(true_state, 6, 6)),   # 0,1,2,3
+    goal = factor(goal, levels = c("both", "informative", "social"))
+    )   
+
+summary(glmer(data=og_glmer, positivity ~ true_state * goal * (1 |subid), family=binomial)) # fuller random effect structure causes model convergence failure
+```
+
+##### Replication frequentist model
+```{r replication-frequentist-model}
+rep_glmer <- rep_raw %>%
+  mutate(
+    positivity = factor(positivity, labels = c(0,1)), 
+    positivity = as.numeric(as.character(positivity)),
+    true_state = as.numeric(substr(true_state, 6, 6)),   # 0,1,2,3
+    goal = factor(goal, levels = c("both", "informative", "social"))
+    )  
+
+summary(glmer(data=rep_glmer, positivity ~ true_state * goal * (1 |subid), family=binomial)) 
+```
+
+
+
+######################################### PLOTS #########################################
+
+############## Line plot like in Yoon et al. (2020) ##############
+
+```{r plot-heart0-both-styled, echo=TRUE, warning=FALSE, message=FALSE, fig.width=8, fig.height=4}
+ 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. Summarization function (exactly “heart0 × both” subset):
+# ─────────────────────────────────────────────────────────────────────────────
+summarize_panel <- function(df) {
+  df %>%
+    filter(true_state == "heart0", goal == "both") %>%
+    mutate(
+      positivity = factor(positivity, levels = c("no_neg","neg")),
+      utterance  = factor(utterance,
+                          levels = c("terrible","bad","good","amazing"))
+    ) %>%
+    count(utterance, positivity) %>%
+    ungroup() %>%
+    mutate(
+      total_n = sum(n),
+      prop    = n / total_n,
+      se      = sqrt(prop * (1 - prop) / total_n)
+    )
+}
+
+# 2. Create summary data frames for original vs replication:
+og_df  <- summarize_panel(og_raw)
+rep_df <- summarize_panel(rep_raw)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. “make_panel()” factory: exactly match the 12‐panel style
+# ─────────────────────────────────────────────────────────────────────────────
+make_panel <- function(df, panel_title) {
+  ggplot(df, aes(x = utterance,
+                 y = prop,
+                 color = positivity,
+                 group = positivity)) +
+    # ─── Lines, points, error bars ────────────────────────────────────────────
+    geom_line(size = 1) +
+    geom_point(size = 2) +
+    geom_errorbar(aes(ymin = prop - 1.96*se,
+                      ymax = prop + 1.96*se),
+                  width     = 0.08,
+                  linewidth = 0.6) +
+    # ─── “Chance” line at 0.125 (dashed gray) ───────────────────────────────
+    geom_hline(yintercept = 0.125,
+               color     = "gray50",
+               linetype  = "dotted",
+               linewidth = 0.5) +
+    # ─── Color scale: blue = “no_neg” / red = “neg” ─────────────────────────────
+    scale_color_manual(
+      values = c("no_neg" = "#1F77B4",
+                 "neg"    = "#D62728"),
+      labels = c("no_neg" = "It was …",
+                 "neg"    = "It wasn't …"),
+      guide  = guide_legend(order          = 1,
+                            label.position = "bottom",
+                            title          = NULL)
+    ) +
+    # ─── Y axis 0 → 1.0 plus tiny padding above/below ─────────────────────────
+    scale_y_continuous(
+      limits = c(0, 1.02),
+      breaks = seq(0, 1.0, by = 0.25),
+      expand = expansion(mult = c(0.0, 0.0))
+    ) +
+    # ─── Labels & titles ───────────────────────────────────────────────────────
+    labs(
+      title = panel_title,
+      x     = "Utterance",
+      y     = "Proportion chosen",
+      color = NULL
+    ) +
+    # ─── Precisely match “white panel + black border + light grid” style ───────
+    theme_minimal(base_size = 12) +
+    theme(
+      # Only major gridlines (light gray); no minor grid
+      panel.grid.minor      = element_blank(),
+      panel.grid.major      = element_line(color = "gray90", linewidth = 0.3),
+      # White background, black border
+      panel.background      = element_blank(),
+      panel.border          = element_rect(fill   = NA,
+                                          color  = "black",
+                                          linewidth = 0.7),
+      # Angled x‐labels exactly as in 12‐panel
+      axis.text.x           = element_text(angle = 30,
+                                           vjust = 0.7,
+                                           size  = 9),
+      axis.text.y           = element_text(size = 9),
+      # Center title
+      plot.title            = element_text(hjust = 0.5),
+      # Legend at bottom
+      legend.position       = "bottom",
+      legend.key.size       = unit(0.7, "line"),
+      legend.text           = element_text(size = 10),
+      # Tight margins for compact look
+      plot.margin           = margin(5, 5, 5, 5)
+    )
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. Build the two panels side by side, sharing a single legend
+# ─────────────────────────────────────────────────────────────────────────────
+p1 <- make_panel(og_df,  "Original")
+p2 <- make_panel(rep_df, "Replication")
+
+combined <- (p1 + p2) +
+  plot_layout(ncol = 2, guides = "collect") &
+  theme(legend.position = "bottom")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. Render
+# ─────────────────────────────────────────────────────────────────────────────
+print(combined)
+
+```
+
+
+##################### Plot all
+```{r plot‐12cells‐with‐right‐strips, echo=FALSE, warning=FALSE, message=FALSE, fig.width=9, fig.height=7}
+
+# ------------------------------------------------------------------------------
+# (1) A helper to summarize raw data into n / prop / SE, tagging each row with
+#     a “source” label (Original vs Replication).  We force the factor‐levels
+#     for true_state, goal, positivity, and utterance to be exactly as in your
+#     single‐cell code, so that faceting is consistent.
+# ------------------------------------------------------------------------------
+make_summary <- function(df, source_label) {
+  df %>%
+    mutate(
+      true_state = fct_relevel(true_state, "heart0", "heart1", "heart2", "heart3"),
+      goal       = fct_relevel(goal,       "both",   "informative", "social"),
+      positivity = factor(positivity,      levels = c("no_neg", "neg")),
+      utterance  = factor(utterance,       levels = c("terrible", "bad", "good", "amazing")),
+      source     = source_label
+    ) %>%
+    # Count each combination of (true_state × goal × utterance × positivity):
+    group_by(true_state, goal, utterance, positivity, source) %>%
+    summarise(n = n(), .groups = "drop") %>%
+    # Ensure we have a row for positivity="no_neg" & "neg" even if n=0:
+    complete(
+      true_state, goal, utterance,
+      positivity = c("no_neg", "neg"),
+      source     = source_label,
+      fill       = list(n = 0L)
+    ) %>%
+    # Within each (true_state × goal × source), compute prop and se:
+    group_by(true_state, goal, source) %>%
+    mutate(
+      total_n = sum(n),
+      prop    = if_else(total_n > 0L, n / total_n, 0),
+      se      = if_else(total_n > 0L,
+                        sqrt(prop * (1 - prop) / total_n),
+                        0)
+    ) %>%
+    ungroup()
+}
+
+# Build two summaries: one for the original data, one for your replication:
+og_summary  <- make_summary(og_raw,  "Original")
+rep_summary <- make_summary(rep_raw, "Replication")
+
+# ------------------------------------------------------------------------------
+# (2) Now draw a single ggplot with 3 rows × 4 columns.  We:
+#     • Plot the “Original” data first (dashed, thin, open circles)
+#     • Then overlay the “Replication” data (solid, thicker, filled circles)
+#     • Use facet_grid(..., switch = "y") + strip.placement = "outside"
+#       so that the goal labels appear on the right
+# ------------------------------------------------------------------------------
+ggplot() +
+  # ─── (2a) Plot ORIGINAL data (dashed, thin, open circles) ─────────────────
+  geom_line(
+    data = og_summary,
+    aes(
+      x        = utterance,
+      y        = prop,
+      color    = positivity,
+      group    = interaction(positivity, source),
+      linetype = source
+    ),
+    size = 0.5   # thinner than the replication lines
+  ) +
+  geom_point(
+    data = og_summary,
+    aes(
+      x        = utterance,
+      y        = prop,
+      color    = positivity,
+      group    = interaction(positivity, source),
+      shape    = source
+    ),
+    size   = 2,
+    stroke = 0.8  # open‐circle style
+  ) +
+  geom_errorbar(
+    data = og_summary,
+    aes(
+      x        = utterance,
+      ymin     = prop - 1.96 * se,
+      ymax     = prop + 1.96 * se,
+      color    = positivity,
+      group    = interaction(positivity, source),
+      linetype = source
+    ),
+    width     = 0.08,
+    linewidth = 0.3  # half of replication’s 0.6
+  ) +
+
+  # ─── (2b) Plot REPLICATION data on top (solid, thicker, filled circles) ─────
+  geom_line(
+    data = rep_summary,
+    aes(
+      x        = utterance,
+      y        = prop,
+      color    = positivity,
+      group    = interaction(positivity, source),
+      linetype = source
+    ),
+    size = 1     # thicker than the original lines
+  ) +
+  geom_point(
+    data = rep_summary,
+    aes(
+      x        = utterance,
+      y        = prop,
+      color    = positivity,
+      group    = interaction(positivity, source),
+      shape    = source
+    ),
+    size = 2
+  ) +
+  geom_errorbar(
+    data = rep_summary,
+    aes(
+      x        = utterance,
+      ymin     = prop - 1.96 * se,
+      ymax     = prop + 1.96 * se,
+      color    = positivity,
+      group    = interaction(positivity, source),
+      linetype = source
+    ),
+    width     = 0.08,
+    linewidth = 0.6
+  ) +
+
+  # ─── (2c) Chance‐level horizontal line at y = 0.125 (dashed gray) ───────────
+  geom_hline(
+    yintercept = 0.125,
+    color      = "gray50",
+    linetype   = "dashed",
+    linewidth  = 0.5
+  ) +
+
+  # ─── (2d) Color scale for positivity: blue = “no_neg”, red = “neg” ──────────
+  scale_color_manual(
+    values = c("no_neg" = "#1F77B4",
+               "neg"    = "#D62728"),
+    labels = c("no_neg" = "It was …",
+               "neg"    = "It wasn't …"),
+    guide  = guide_legend(
+                order          = 1,
+                title          = NULL,
+                label.position = "bottom"
+             )
+  ) +
+
+  # ─── (2e) Line‐type scale for “Source”: dashed = Original, solid = Replication ──
+  scale_linetype_manual(
+    name   = "Source",
+    values = c("Original"    = "dashed",
+               "Replication" = "solid"),
+    guide  = guide_legend(
+                order          = 2,
+                title.position = "top",
+                title.hjust    = 0.5
+             )
+  ) +
+
+  # ─── (2f) Shape scale for “Source”: open circle for Original, filled for Replication ─
+  scale_shape_manual(
+    name   = "Source",
+    values = c("Original"    = 1,   # open circle
+               "Replication" = 16), # filled circle
+    guide  = guide_legend(
+                order          = 2,
+                title.position = "top",
+                title.hjust    = 0.5
+             )
+  ) +
+
+  # ─── (2g) Y‐axis goes from 0 to 1.02 with tick marks every .25 ──────────────
+  scale_y_continuous(
+    limits = c(0, 1.02),
+    breaks = seq(0, 1.0, by = 0.25),
+    expand = expansion(mult = c(0.01, 0.01))
+  ) +
+
+  # ─── (2h) Facet into 3 rows = goal, 4 columns = true_state, switch Y to move
+  #          the row labels (“Both,” “Informative,” “Kind”) to the right. ─────────
+  facet_grid(
+    rows     = vars(goal),
+    cols     = vars(true_state),
+    switch   = "y",
+    labeller = labeller(
+      true_state = c(
+        "heart0" = "0 heart",
+        "heart1" = "1 heart",
+        "heart2" = "2 hearts",
+        "heart3" = "3 hearts"
+      ),
+      goal       = c(
+        "both"        = "Both",
+        "informative" = "Informative",
+        "social"      = "Kind"
+      )
+    )
+  ) +
+
+  # ─── (2i) Axis labels ─────────────────────────────────────────────────────────
+  labs(
+    x     = "Utterance",
+    y     = "Proportion chosen"
+  ) +
+
+  # ─── (2j) Clean theme: white background, thin black border, light gray grid ───
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor      = element_blank(),
+    panel.grid.major      = element_line(color = "gray90", linewidth = 0.3),
+    panel.background      = element_blank(),
+    panel.border          = element_rect(fill   = NA,
+                                        color  = "black",
+                                        linewidth = 0.7),
+
+    panel.spacing.x       = unit(0.5, "cm"),
+    panel.spacing.y       = unit(0.5, "cm"),
+
+    # Hide the left‐side strip text; style only the right‐side strip text:
+    strip.text.y.right    = element_text(
+                              
+                              size   = 10,
+                              margin = margin(l = 6)
+                            ),
+
+    # Style the top strip (true_state headings) in bold, with a bit of bottom margin
+    strip.text.x.top      = element_text(
+                              
+                              size   = 10,
+                              margin = margin(b = 6)
+                            ),
+
+    # Slanted X‐axis labels for readability
+    axis.text.x           = element_text(angle  = 30,
+                                         vjust  = 0.7,
+                                         size   = 9),
+    axis.text.y           = element_text(size = 9),
+
+    # Tight plot margins
+    plot.margin           = margin(5, 5, 5, 5),
+
+    # Put both legends (color & linetype/shape) at the bottom, in one row
+    legend.position       = "bottom",
+    legend.box            = "horizontal",
+    legend.key.size       = unit(0.7, "line"),
+    legend.text           = element_text(size = 10)
+  )
+```
+
